@@ -1,5 +1,7 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
+from controllers.abrir_turno import abrir_turno
+from controllers.cerrar_turno import cerrar_turno
 
 class TurnosView(tk.Toplevel):
     def __init__(self, master=None):
@@ -27,7 +29,16 @@ class TurnosView(tk.Toplevel):
         ttk.Button(frame, text="Cerrar Turno", command=self.cerrar_turno).grid(row=0, column=1, padx=10)
 
     def abrir_turno(self):
-        print("Turno abierto")
+        hora = abrir_turno()
+        if hora:
+            messagebox.showinfo("Turno Abierto", f"Turno iniciado a las {hora}")
+        else:
+            messagebox.showwarning("Error", "Ya hay un turno abierto sin cerrar.")
 
     def cerrar_turno(self):
-        print("Turno cerrado")
+        ingresos = 50000  # En esta versión simulamos ingresos
+        hora = cerrar_turno(ingresos)
+        if hora:
+            messagebox.showinfo("Turno Cerrado", f"Turno cerrado a las {hora}\nIngresos: ${ingresos}")
+        else:
+            messagebox.showwarning("Error", "No hay turno abierto para cerrar.")

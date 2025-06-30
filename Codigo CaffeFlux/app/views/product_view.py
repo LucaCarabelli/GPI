@@ -1,5 +1,12 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox
+from controllers.create_product import CreateProduct
+from controllers.edit_product import EditProduct
+from controllers.delete_product import DeleteProduct
+import json
+import os
+
+DATA_PATH = "data/productos.json"
 
 class ProductosView(tk.Toplevel):
     def __init__(self, master=None):
@@ -9,6 +16,7 @@ class ProductosView(tk.Toplevel):
         self.configure(bg="#ffffff")
 
         self.create_widgets()
+        self.cargar_productos()
 
     def create_widgets(self):
         title_label = tk.Label(
@@ -48,11 +56,74 @@ class ProductosView(tk.Toplevel):
         self.tree.heading("Precio", text="Precio")
         self.tree.pack(pady=20, fill="both", expand=True)
 
+    def cargar_productos(self):
+        for row in self.tree.get_children():
+            self.tree.delete(row)
+
+        if not os.path.exists(DATA_PATH):
+            return
+
+        with open(DATA_PATH, "r") as f:
+            productos = json.load(f)
+            for producto in productos:
+                self.tree.insert("", "end", values=(producto["nombre"], producto["categoria"], producto["precio"]))
+
     def agregar_producto(self):
-        print("Producto agregado")
+        nombre = self.nombre_entry.get()
+        categoria = self.categoria_entry.get()
+        precio = self.precio_entry.get()
+
+        if not nombre or not categoria or not precio:
+            messagebox.showerror("Error", "Todos los campos son obligatorios")
+            return
+
+        try:
+            precio = float(precio)
+        except ValueError:
+            messagebox.showerror("Error", "Precio debe ser un número")
+            return
+
+        CreateProduct.add(nombre, categoria, precio)
+        self.cargar_productos()
+        self.limpiar_campos()
 
     def editar_producto(self):
-        print("Producto editado")
+        selected_item = self.tree.selection()
+        if not selected_item:
+            messagebox.showwarning("Advertencia", "Seleccione un producto para editar.")
+            return
+
+        index = self.tree.index(selected_item)
+        nombre = self.nombre_entry.get()
+        categoria = self.categoria_entry.get()
+        precio = self.precio_entry.get()
+
+        if not nombre or not categoria or not precio:
+            messagebox.showerror("Error", "Todos los campos son obligatorios")
+            return
+
+        try:
+            precio = float(precio)
+        except ValueError:
+            messagebox.showerror("Error", "Precio debe ser un número")
+            return
+
+        EditProduct.update(index, nombre, categoria, precio)
+        self.cargar_productos()
+        self.limpiar_campos()
 
     def eliminar_producto(self):
-        print("Producto eliminado")
+        selected_item = self.tree.selection()
+        if not selected_item:
+            messagebox.showwarning("Advertencia", "Seleccione un producto para eliminar.")
+            return
+
+        index = self.tree.index(selected_item)
+        DeleteProduct.remove(index)
+        self.cargar_productos()
+        self.limpiar_campos()
+
+    def limpiar_campos(self):
+        self.nombre_entry.delete(0, tk.END)
+        self.categoria_entry.delete(0, tk.END)
+        self.precio_entry.delete(0, tk.END)
