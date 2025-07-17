@@ -1,20 +1,20 @@
+# app/views/productos_view.py
+
 import tkinter as tk
 from tkinter import ttk, messagebox
 from controllers.create_product import CreateProduct
 from controllers.edit_product import EditProduct
 from controllers.delete_product import DeleteProduct
+from utils.theme import current_theme
 import json
 import os
 
 DATA_PATH = "data/productos.json"
 
-class ProductosView(tk.Toplevel):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.title("Gestión de Productos")
-        self.geometry("800x600")
-        self.configure(bg="#ffffff")
-
+class ProductosView(tk.Frame):
+    def __init__(self, master=None, controller=None):
+        super().__init__(master, bg=current_theme["bg"])
+        self.controller = controller
         self.create_widgets()
         self.cargar_productos()
 
@@ -23,27 +23,27 @@ class ProductosView(tk.Toplevel):
             self,
             text="Gestión de Productos",
             font=("Helvetica", 20, "bold"),
-            fg="#4B3621",
-            bg="#ffffff"
+            fg=current_theme["accent"],
+            bg=current_theme["bg"]
         )
         title_label.pack(pady=20)
 
-        form_frame = tk.Frame(self, bg="#ffffff")
+        form_frame = tk.Frame(self, bg=current_theme["bg"])
         form_frame.pack(pady=10)
 
-        tk.Label(form_frame, text="Nombre:", bg="#ffffff").grid(row=0, column=0, sticky="e", padx=5, pady=5)
+        tk.Label(form_frame, text="Nombre:", bg=current_theme["bg"], fg=current_theme["fg"]).grid(row=0, column=0, sticky="e", padx=5, pady=5)
         self.nombre_entry = tk.Entry(form_frame, width=30)
         self.nombre_entry.grid(row=0, column=1, pady=5)
 
-        tk.Label(form_frame, text="Categoría:", bg="#ffffff").grid(row=1, column=0, sticky="e", padx=5, pady=5)
+        tk.Label(form_frame, text="Categoría:", bg=current_theme["bg"], fg=current_theme["fg"]).grid(row=1, column=0, sticky="e", padx=5, pady=5)
         self.categoria_entry = tk.Entry(form_frame, width=30)
         self.categoria_entry.grid(row=1, column=1, pady=5)
 
-        tk.Label(form_frame, text="Precio:", bg="#ffffff").grid(row=2, column=0, sticky="e", padx=5, pady=5)
+        tk.Label(form_frame, text="Precio:", bg=current_theme["bg"], fg=current_theme["fg"]).grid(row=2, column=0, sticky="e", padx=5, pady=5)
         self.precio_entry = tk.Entry(form_frame, width=30)
         self.precio_entry.grid(row=2, column=1, pady=5)
 
-        btn_frame = tk.Frame(self, bg="#ffffff")
+        btn_frame = tk.Frame(self, bg=current_theme["bg"])
         btn_frame.pack(pady=15)
 
         ttk.Button(btn_frame, text="Agregar", command=self.agregar_producto).grid(row=0, column=0, padx=10)

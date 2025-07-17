@@ -1,11 +1,10 @@
 import tkinter as tk
 
-class AyudaView(tk.Toplevel):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.title("Ayuda")
-        self.geometry("800x600")
-        self.configure(bg="#ffffff")
+class AyudaView(tk.Frame):
+    def __init__(self, master=None, controller=None):
+        super().__init__(master, bg="#ffffff")
+        self.controller = controller  # Por si en el futuro necesitas volver al menú principal
+        self.pack(fill="both", expand=True)
 
         tk.Label(self, text="Centro de Ayuda", font=("Helvetica", 20, "bold"), bg="#ffffff", fg="#4B3621").pack(pady=20)
         mensaje = (
