@@ -17,10 +17,11 @@ class MainWindow(tk.Tk):
         self.geometry("900x600")
         self.configure(bg=current_theme["bg"])
 
+        self.current_view = None
         self.create_widgets()
 
     def create_widgets(self):
-        # Título estilizado
+        # Título
         self.title_label = tk.Label(
             self,
             text="CafféFlux",
@@ -28,35 +29,50 @@ class MainWindow(tk.Tk):
             fg=current_theme["accent"],
             bg=current_theme["bg"]
         )
-        self.title_label.pack(pady=40)
+        self.title_label.pack(pady=10)
 
-        # Frame para los botones
-        self.button_frame = tk.Frame(self, bg=current_theme["bg"])
-        self.button_frame.pack()
+        # Botonera lateral
+        self.sidebar = tk.Frame(self, bg=current_theme["bg"])
+        self.sidebar.pack(side="left", fill="y", padx=10, pady=10)
 
-        self.buttons = [
-            ("Gestión de Productos", ProductosView),
-            ("Gestión de Turno", TurnosView),
-            ("Reportes", ReportesView),
-            ("Configuración", lambda root=self: ConfiguracionView(root)),
-            ("Ayuda", AyudaView)
-        ]
+        self.buttons = {
+            "Gestión de Productos": ProductosView,
+            "Gestión de Turno": TurnosView,
+            "Reportes": ReportesView,
+            "Configuración": ConfiguracionView,
+            "Ayuda": AyudaView
+        }
 
-        for text, view in self.buttons:
+        for text, view_class in self.buttons.items():
             btn = ttk.Button(
-                self.button_frame,
+                self.sidebar,
                 text=text,
-                command=lambda v=view: v(self),
-                width=30
+                width=25,
+                command=lambda v=view_class: self.cambiar_vista(v)
             )
-            btn.pack(pady=10)
+            btn.pack(pady=5)
+
+        # Área central de contenido
+        self.content_frame = tk.Frame(self, bg=current_theme["bg"])
+        self.content_frame.pack(side="right", expand=True, fill="both", padx=10, pady=10)
+
+    def cambiar_vista(self, vista_clase):
+        # Elimina vista actual
+        if self.current_view is not None:
+            self.current_view.destroy()
+
+        # Crea nueva vista en el content_frame
+        self.current_view = vista_clase(master=self.content_frame, controller=self)
+        self.current_view.pack(expand=True, fill="both")
 
     def actualizar_tema(self):
-        """Llama esto después de cambiar el tema para actualizar colores"""
         self.configure(bg=current_theme["bg"])
         self.title_label.configure(bg=current_theme["bg"], fg=current_theme["accent"])
-        self.button_frame.configure(bg=current_theme["bg"])
-        
+        self.sidebar.configure(bg=current_theme["bg"])
+        self.content_frame.configure(bg=current_theme["bg"])
+        if self.current_view:
+            self.current_view.configure(bg=current_theme["bg"])
+
 if __name__ == "__main__":
     app = MainWindow()
     app.mainloop()

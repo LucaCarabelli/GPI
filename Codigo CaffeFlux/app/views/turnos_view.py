@@ -1,15 +1,15 @@
+# app/views/turnos_view.py
+
 import tkinter as tk
 from tkinter import ttk, messagebox
 from controllers.abrir_turno import abrir_turno
 from controllers.cerrar_turno import cerrar_turno
+from utils.theme import current_theme
 
-class TurnosView(tk.Toplevel):
-    def __init__(self, master=None):
-        super().__init__(master)
-        self.title("Gestión de Turnos")
-        self.geometry("800x600")
-        self.configure(bg="#ffffff")
-
+class TurnosView(tk.Frame):
+    def __init__(self, master=None, controller=None):
+        super().__init__(master, bg=current_theme["bg"])
+        self.controller = controller
         self.create_widgets()
 
     def create_widgets(self):
@@ -17,12 +17,12 @@ class TurnosView(tk.Toplevel):
             self,
             text="Gestión de Turnos",
             font=("Helvetica", 20, "bold"),
-            fg="#4B3621",
-            bg="#ffffff"
+            fg=current_theme["accent"],
+            bg=current_theme["bg"]
         )
         title_label.pack(pady=20)
 
-        frame = tk.Frame(self, bg="#ffffff")
+        frame = tk.Frame(self, bg=current_theme["bg"])
         frame.pack(pady=20)
 
         ttk.Button(frame, text="Abrir Turno", command=self.abrir_turno).grid(row=0, column=0, padx=10)
@@ -36,7 +36,7 @@ class TurnosView(tk.Toplevel):
             messagebox.showwarning("Error", "Ya hay un turno abierto sin cerrar.")
 
     def cerrar_turno(self):
-        ingresos = 50000  # En esta versión simulamos ingresos
+        ingresos = 50000  # Valor simulado por ahora
         hora = cerrar_turno(ingresos)
         if hora:
             messagebox.showinfo("Turno Cerrado", f"Turno cerrado a las {hora}\nIngresos: ${ingresos}")
